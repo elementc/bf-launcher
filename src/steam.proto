@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package steam;
+
+message StateUpdate {
+    string state = 1;
+}
+
+message DetailsUpdate {
+    string details = 1;
+}
