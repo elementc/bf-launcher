@@ -2,10 +2,32 @@ syntax = "proto3";
 
 package steam;
 
-message StateUpdate {
+service Steam{
+    rpc InitSteamworks (SteamworksInitRequest) returns (SteamworksInitResult) {}
+    rpc UpdateGameState(StateUpdateMessage) returns (StateUpdateAck) {}
+    rpc UpdateGameDetails(DetailsUpdateMessage) returns (DetailsUpdateAck) {}
+}
+
+message SteamworksInitRequest {
+
+}
+
+message SteamworksInitResult {
+    string user_name = 1;
+    bool succeeded = 2;
+
+}
+
+message StateUpdateMessage {
     string state = 1;
 }
 
-message DetailsUpdate {
+message StateUpdateAck {
+}
+
+message DetailsUpdateMessage {
     string details = 1;
+}
+
+message DetailsUpdateAck {
 }
