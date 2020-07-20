@@ -20,7 +20,8 @@ using steam::DetailsUpdateAck;
 class SteamServiceImpl final : public Steam::Service {
     Status InitSteamworks(ServerContext* context, const SteamworksInitRequest* request, SteamworksInitResult* result){
         std::cout << "Received Initialization request." << std::endl;
-        result;
+        result->set_succeeded(true);
+        result->set_user_name("Mike Lawson");
         return Status::OK;
 
     }
