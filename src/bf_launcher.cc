@@ -36,7 +36,7 @@ class SteamServiceImpl final : public Steam::Service {
 };
 
 void runServer(){
-    std::string server_address("0.0.0.0:50051");
+    std::string server_address("localhost:50051");
     SteamServiceImpl service;
     ServerBuilder builder;
     
