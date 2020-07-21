@@ -9,6 +9,8 @@ generate_cpp_from_protofile(src/steam.proto)
 # Include generated *.pb.h files
 include_directories("${generated_protobuf_header_dir}")
 
+include(build/tiny-process-managed.cmake)
+
 # The main application.
 add_executable(bf_launcher src/bf_launcher.cc ${generated_pb_srcs} ${generated_grpc_srcs})
-target_link_libraries(bf_launcher ${GRPC_LIBRARY} ${PROTOBUF_LIBRARY} )
+target_link_libraries(bf_launcher ${GRPC_LIBRARY} ${PROTOBUF_LIBRARY} tiny-process-library)

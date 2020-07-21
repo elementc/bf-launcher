@@ -5,6 +5,8 @@
 #include "steam.grpc.pb.h"
 #include <grpcpp/grpcpp.h>
 
+#include <process.hpp>
+
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -55,6 +57,10 @@ void runServer(){
 }
 
 int main(int argc, char** argv){
+   TinyProcessLib::Process process1a("/home/casey/repos/bitfighter/exe/bitfighter", "", [](const char *bytes, size_t n) {
+    std::cout << "Output from stdout: " << std::string(bytes, n) << std::endl;
+  });
+
     runServer();
     return 0;
 }
