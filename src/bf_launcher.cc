@@ -89,14 +89,14 @@ void runServer(){
 void start_proc(const std::string proc){
 
     // Block until gRPC is finished starting up.
-    while(true){
-        grpc_init_gate.lock();
-        if (grpc_is_started){
-            break;
-        }
-        grpc_init_gate.unlock();
+    bool ready = false;
+    while(!ready){
         std::this_thread::sleep_for(1ms);
+        grpc_init_gate.lock();
+        ready = grpc_is_started; // We might also need to block until other libraries are ready in the future.
+        grpc_init_gate.unlock();
     }
+
 
     // Launch bitfighter.
     TinyProcessLib::Process bf_process(proc, "", [](const char* bytes, size_t n) {
