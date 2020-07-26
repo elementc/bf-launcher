@@ -6,6 +6,8 @@
 #include <grpcpp/grpcpp.h>
 
 #include <process.hpp>
+#include <thread>
+#include <mutex>
 
 using grpc::Server;
 using grpc::ServerBuilder;
@@ -56,13 +58,22 @@ void runServer(){
     server->Wait();
 }
 
-int main(int argc, char** argv) {
-    if (argc >= 2) {
-        TinyProcessLib::Process process1a(argv[1], "", [](const char* bytes, size_t n) {
+void start_proc(const std::string proc){
+            TinyProcessLib::Process process1a(proc, "", [](const char* bytes, size_t n) {
             std::cout << "Output from stdout: " << std::string(bytes, n) << std::endl;
             });
+}
+
+int main(int argc, char** argv) {
+    if (argc != 2) {
+        std::cerr << "Usage: " << argv[0] << " /path/to/a/bitfighter/executable" << std::endl;
+        return -1;
     }
+    std::thread proc_runner(start_proc, std::string(argv[1]));
 
     runServer();
+
+    proc_runner.join();
+    
     return 0;
 }
