@@ -56,10 +56,12 @@ void runServer(){
     server->Wait();
 }
 
-int main(int argc, char** argv){
-   TinyProcessLib::Process process1a("/home/casey/repos/bitfighter/exe/bitfighter", "", [](const char *bytes, size_t n) {
-    std::cout << "Output from stdout: " << std::string(bytes, n) << std::endl;
-  });
+int main(int argc, char** argv) {
+    if (argc >= 2) {
+        TinyProcessLib::Process process1a(argv[1], "", [](const char* bytes, size_t n) {
+            std::cout << "Output from stdout: " << std::string(bytes, n) << std::endl;
+            });
+    }
 
     runServer();
     return 0;
