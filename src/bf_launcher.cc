@@ -22,22 +22,32 @@ using steam::DetailsUpdateMessage;
 using steam::DetailsUpdateAck;
 
 class SteamServiceImpl final : public Steam::Service {
-    Status InitSteamworks(ServerContext* context, const SteamworksInitRequest* request, SteamworksInitResult* result){
-        std::cout << "Received Initialization request." << std::endl;
-        result->set_succeeded(true);
-        result->set_user_name("Mike Lawson");
-        return Status::OK;
+    public: 
+        Status InitSteamworks(ServerContext* context, const SteamworksInitRequest* request, SteamworksInitResult* result){
+            std::cout << "Received Initialization request." << std::endl;
+            if (!is_init){
+                is_init = true;
+                result->set_succeeded(true);
+                result->set_user_name("Mike Lawson");
+                std::cout << "Steam login complete." << std::endl;
+                return Status::OK;
+            } else {
+                std::cerr << "Steam is already logged in! Not re-initing." << std::endl;
+                return Status::CANCELLED;
+            }
 
-    }
-    Status UpdateGameState(ServerContext* context, const StateUpdateMessage* message, StateUpdateAck* result){
-        std::cout << "Got a state update message: " << message->state() << std::endl;
-        return Status::OK;
-    }
-    Status UpdateGameDetails(ServerContext* context, const DetailsUpdateMessage* message, DetailsUpdateAck* result){
-        std::cout << "Got a details update message: " << message->details() << std::endl;
-        return Status::OK;
-    }
-};
+        }
+        Status UpdateGameState(ServerContext* context, const StateUpdateMessage* message, StateUpdateAck* result){
+            std::cout << "Got a state update message: " << message->state() << std::endl;
+            return Status::OK;
+        }
+        Status UpdateGameDetails(ServerContext* context, const DetailsUpdateMessage* message, DetailsUpdateAck* result){
+            std::cout << "Got a details update message: " << message->details() << std::endl;
+            return Status::OK;
+        }
+    private:
+        bool is_init = false;
+    };
 
 void runServer(){
     std::string server_address("localhost:50051");
@@ -59,9 +69,10 @@ void runServer(){
 }
 
 void start_proc(const std::string proc){
-            TinyProcessLib::Process process1a(proc, "", [](const char* bytes, size_t n) {
+            TinyProcessLib::Process bf_process(proc, "", [](const char* bytes, size_t n) {
             std::cout << "Output from stdout: " << std::string(bytes, n) << std::endl;
             });
+            auto exit_status = bf_process.get_exit_status();
 }
 
 int main(int argc, char** argv) {
@@ -70,10 +81,10 @@ int main(int argc, char** argv) {
         return -1;
     }
     std::thread proc_runner(start_proc, std::string(argv[1]));
-
-    runServer();
+    std::thread grpc_server(runServer);
 
     proc_runner.join();
-    
+    grpc_server.detach();
+
     return 0;
 }
